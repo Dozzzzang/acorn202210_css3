@@ -70,6 +70,8 @@
     <script src="https://code.jquery.com/jquery-3.6.4.js"
      integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E="
          crossorigin="anonymous"></script>
+    <!-- jquery plugin javascript 로딩 -->     
+    <script src="js/jquery.touchSwipe.js"></script>
     <script>
         // 몇 각형인지 
         const n=8;
@@ -156,16 +158,56 @@
             isRun=true;
         });
         // 5 초마다 carousel 을 회전 시키는 인터벌
-        setInterval(()=>{
-            if(!isRun){
-                return;
+        // setInterval(()=>{
+        //     if(!isRun){
+        //         return;
+        //     }
+
+        //     $(".carousel").addClass("transition");
+        //     rY += angle;
+        //     rotateY();
+
+        // }, 5000);
+
+        //터치가 시작된 시점의 rY 값을 저장할 변수
+        let startRY=0;    
+
+        $(".carousel").swipe({
+            swipeStatus:function(event, phase, direction, distance){
+                switch(phase){
+                    case "start":
+                        //transition 제거
+                        $(".carousel").removeClass("transition");
+                        //터치 시작된 시점의 현재 rY 값을 변수에 저장한다.
+                        startRY = rY;
+                    break;
+                    case "move":
+                        if(direction=="left"){
+                            //스와이프한 거리에 비례해서 rY 에 반영해서 회전시킨다.
+                            rY = startRY - distance/8;        
+                        }else if(direction=="right"){
+                            rY = startRY + distance/8;  
+                        }
+                        rotateY();
+                    break;
+                    case "cancel":
+                        $(".carousel").addClass("transition");
+                        //취소 되었을때는 원상 복구 
+                        rY = startRY;
+                        rotateY();  
+                    break;
+                    case "end":
+                        $(".carousel").addClass("transition");
+                        if(direction=="left"){
+                            rY = startRY - angle;     
+                        }else if(direction=="right"){
+                            rY = startRY + angle; 
+                        }
+                        rotateY();  
+                    break;
+                } 
             }
-
-            $(".carousel").addClass("transition");
-            rY += angle;
-            rotateY();
-
-        }, 5000);
+        });
     </script>
 </body>
 </html>
