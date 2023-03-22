@@ -21,7 +21,6 @@
             margin: 0 auto;
             transform-style: preserve-3d;
             transform-origin: 50% 50%;
-            transition: transform 0.4s ease-out;
         }
         .carousel > div{
             border: 1px solid red;
@@ -44,7 +43,14 @@
         nav button{
             font-size: 30px;
         }
-        
+        /* 
+            class 선택자로 transition 을 정의하고 
+            필요할때 이 class 를 어떤 요소에 추가하면 transtion 이 적용되고
+            제거하면 transition 이 적용되지 않도록 할수가 있다.
+        */
+        .transition{
+            transition: transform 0.4s ease-out;
+        }
     </style>
 </head>
 <body>
@@ -85,6 +91,8 @@
         let rY=0;
 
         function init(){
+            //다시 배치할때는 transition 이 필요 없다.
+            $(".carousel").removeClass("transition");
             // 배치할때 z 축 평행이동 값 얻어내기 
             tz=getAngleNtz(n, width).tz;
 
@@ -112,11 +120,13 @@
 
         //위의 버튼을 눌렀을때 .cube 를 90 도씩 y 축 기준으로 회전하도록 해 보세요.
         $("#prevBtn").click(()=>{
+            $(".carousel").addClass("transition");
             rY -= angle;
             rotateY();
         });
 
         $("#nextBtn").click(()=>{
+            $(".carousel").addClass("transition");
             rY += angle;
             rotateY();
         });
@@ -135,6 +145,27 @@
             };
             return obj;
         }
+        //carousel 을 자동 회전 시킬지 여부 
+        let isRun=true;
+
+        $(".carousel").on("mouseover", ()=>{
+            isRun=false;
+        });
+
+        $(".carousel").on("mouseout", ()=>{
+            isRun=true;
+        });
+        // 5 초마다 carousel 을 회전 시키는 인터벌
+        setInterval(()=>{
+            if(!isRun){
+                return;
+            }
+
+            $(".carousel").addClass("transition");
+            rY += angle;
+            rotateY();
+
+        }, 5000);
     </script>
 </body>
 </html>
